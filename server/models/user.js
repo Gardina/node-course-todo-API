@@ -9,6 +9,6 @@ var User = mongoose.model('User',{
 	}
 });
 
-module.exports = (
-  User
-);
+module.exports = {
+	User
+};
