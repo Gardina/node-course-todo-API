@@ -14,7 +14,7 @@ var app = express();
 const port = process.env.PORT;
 
 app.use(bodyParser.json());
-
+//post to do as authentificated user
 app.post('/todos', authenticate, (req, res) => {
 	var todo = new Todo({
 		text: req.body.text,
@@ -27,7 +27,7 @@ app.post('/todos', authenticate, (req, res) => {
 		res.status(400).send(e);
 	});
 });
-
+//list all todos for authentificated user
 app.get('/todos', authenticate, (req, res) => {
 	Todo.find({
 		_creator: req.user._id
@@ -37,7 +37,7 @@ app.get('/todos', authenticate, (req, res) => {
 		res.status(400).send(e);
 	});
 });
-
+//get one todo by id for authentificated user
 app.get('/todos/:id',authenticate, (req, res) => {
 	var id = req.params.id;
 
@@ -58,7 +58,7 @@ app.get('/todos/:id',authenticate, (req, res) => {
 		res.status(400).send();
 	});
 });
-
+// delete todo by id for authentificated user
 app.delete('/todos/:id', authenticate, (req, res) => {
 	var id = req.params.id;
 
@@ -79,7 +79,7 @@ app.delete('/todos/:id', authenticate, (req, res) => {
 		res.status(400).send();
 	});
 });
-
+// edit text and completed fields of one todo for authentificated user
 app.patch('/todos/:id', authenticate,  (req, res) => {
 	var id = req.params.id;
 	var body = _.pick(req.body, ['text', 'completed']);
@@ -97,7 +97,7 @@ app.patch('/todos/:id', authenticate,  (req, res) => {
 
 	Todo.findOneAndUpdate({
 		_id: id,
-		_creator: req.user._id		
+		_creator: req.user._id
 	}, {$set: body}, {new: true}).then((todo) => {
 		if (!todo) {
 			return res.status(404).send();
@@ -109,7 +109,7 @@ app.patch('/todos/:id', authenticate,  (req, res) => {
 	});
 });
 
-// POST /users
+// add new user
 app.post('/users', (req, res) => {
 	var body = _.pick(req.body, ['email', 'password']);
 	var user = new User(body);
@@ -122,11 +122,11 @@ app.post('/users', (req, res) => {
 		res.status(400).send(e);
 	});
 });
-
+// see user if authentificated
 app.get('/users/me', authenticate, (req, res) => {
 	res.send(req.user);
 });
-
+//login user and return auth token
 app.post('/users/login', (req, res) => {
 	var body = _.pick(req.body, ['email', 'password']);
 	User.findByCredentials(body.email, body.password).then((user) => {
@@ -137,7 +137,7 @@ app.post('/users/login', (req, res) => {
 		res.status(400).send();
 	});
 });
-
+//logout user
 app.delete('/users/me/token', authenticate, (req, res) => {
 	req.user.removeToken(req.token).then(() => {
 		res.status(200).send();
